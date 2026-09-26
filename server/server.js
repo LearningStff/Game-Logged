@@ -64,6 +64,23 @@ app.get('/api/games', async (req, res) => {
   }
 })
 
+app.delete('/api/games/:id', async (req, res) => {
+  try {
+    const game = await Game.findByIdAndDelete(req.params.id)
+
+    res.json({
+      message: 'Game removed',
+      game: game
+    })
+  } catch (error) {
+    console.log(error)
+
+    res.status(500).json({
+      message: 'Failed to remove game'
+    })
+  }
+})
+
 app.listen(3000, () => {
   console.log('Server running on port 3000')
 })

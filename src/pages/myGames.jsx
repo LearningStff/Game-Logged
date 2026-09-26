@@ -3,6 +3,8 @@ import GameCard from '../components/gamecard'
 
 function MyGames() {
   const [games, setGames] = useState([])
+  const [filter, setFilter] = useState('All')
+  const [removingId, setRemovingId] = useState(null)
 
   useEffect(() => {
     async function fetchMyGames() {
@@ -14,6 +16,33 @@ function MyGames() {
 
     fetchMyGames()
   }, [])
+
+  async function removeGame(id) {
+    const response = await fetch(`http://localhost:3000/api/games/${id}`, {
+      method: 'DELETE'
+    })
+
+    const data = await response.json()
+    console.log(data)
+
+    if (response.ok) {
+      setGames(games.filter((game) => game._id !== id))
+      setRemovingId(null)
+    }
+  }
+
+  const filteredGames =
+    filter === 'All'
+      ? games
+      : games.filter((game) => game.status === filter)
+
+  const filters = [
+    'All',
+    'Playing',
+    'Completed',
+    'Want to Play',
+    'Dropped'
+  ]
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-12">
@@ -32,14 +61,34 @@ function MyGames() {
         </p>
       </div>
 
+      <div className="mb-8 flex flex-wrap gap-3">
+        {filters.map((filterName) => (
+          <button
+            key={filterName}
+            onClick={() => setFilter(filterName)}
+            className={`rounded-lg px-4 py-2 font-medium transition ${
+              filter === filterName
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
+            }`}
+          >
+            {filterName}
+          </button>
+        ))}
+      </div>
+
       {games.length === 0 ? (
         <p className="text-gray-400">
           You haven't added any games yet.
         </p>
+      ) : filteredGames.length === 0 ? (
+        <p className="text-gray-400">
+          No games found in this category.
+        </p>
       ) : (
         <div className="grid grid-cols-2 gap-x-5 gap-y-9 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
 
-          {games.map((game) => (
+          {filteredGames.map((game) => (
             <div key={game._id}>
               <GameCard
                 id={game.gameId}
@@ -52,6 +101,34 @@ function MyGames() {
               <p className="mt-2 text-sm text-blue-400">
                 {game.status}
               </p>
+
+              {removingId === game._id ? (
+                <div className="mt-2 flex items-center gap-3">
+
+                  <button
+                    onClick={() => setRemovingId(null)}
+                    className="text-sm text-gray-400 hover:text-white"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={() => removeGame(game._id)}
+                    className="text-sm font-medium text-red-400 hover:text-red-300"
+                  >
+                    Confirm Remove
+                  </button>
+
+                </div>
+              ) : (
+                <button
+                  onClick={() => setRemovingId(game._id)}
+                  className="mt-2 text-sm text-red-400 hover:text-red-300"
+                >
+                  Remove
+                </button>
+              )}
+
             </div>
           ))}
 

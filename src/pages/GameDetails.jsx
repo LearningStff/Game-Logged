@@ -6,6 +6,8 @@ function GameDetails() {
   const [game, setGame] = useState(null)
   const [status, setStatus] = useState('')
   const [rating, setRating] = useState(0)
+  const [saveMessage, setSaveMessage] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
     async function fetchGame() {
@@ -22,30 +24,44 @@ function GameDetails() {
 
   async function saveGame() {
     if (!status) {
-      alert('Please select a status')
+      setSaveMessage('Please select a status')
       return
     }
 
-    const response = await fetch('http://localhost:3000/api/games', {
-      method: 'POST',
+    setIsSaving(true)
+    setSaveMessage('')
 
-      headers: {
-        'Content-Type': 'application/json'
-      },
+    try {
+      const response = await fetch('http://localhost:3000/api/games', {
+        method: 'POST',
 
-      body: JSON.stringify({
-        gameId: game.id,
-        title: game.name,
-        image: game.background_image,
-        released: game.released,
-        status: status,
-        rating: rating
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+          gameId: game.id,
+          title: game.name,
+          image: game.background_image,
+          released: game.released,
+          status: status,
+          rating: rating
+        })
       })
-    })
 
-    const data = await response.json()
+      if (!response.ok) {
+        throw new Error('Failed to save game')
+      }
 
-    console.log(data)
+      await response.json()
+
+      setSaveMessage('✓ Saved to My Games')
+    } catch (error) {
+      console.log(error)
+      setSaveMessage('Failed to save game')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   if (!game) {
@@ -158,12 +174,27 @@ function GameDetails() {
             {/* Save */}
             <button
               onClick={saveGame}
-              className="rounded-lg bg-blue-600 px-6 py-3 font-semibold hover:bg-blue-500"
+              disabled={isSaving}
+              className="rounded-lg bg-blue-600 px-6 py-3 font-semibold transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Save to My Games
+              {isSaving ? 'Saving...' : 'Save to My Games'}
             </button>
 
           </div>
+
+          {/* Save Feedback */}
+          {saveMessage && (
+            <div
+              className={`mt-6 rounded-lg border px-4 py-3 text-sm ${
+                saveMessage.startsWith('✓')
+                  ? 'border-green-500/20 bg-green-500/10 text-green-400'
+                  : 'border-red-500/20 bg-red-500/10 text-red-400'
+              }`}
+            >
+              {saveMessage}
+            </div>
+          )}
+
         </div>
 
         {/* About */}
