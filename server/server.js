@@ -9,12 +9,23 @@ import session from 'express-session'
 import MongoStore from 'connect-mongo'
 
 dotenv.config()
-console.log("Mongo URI exists:", !!process.env.MONGO_URI)
 
 const app = express()
 
+// Local development uses localhost.
+// When deployed, CLIENT_URL will be your deployed frontend URL.
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173'
+
+// Render will use production mode.
+// Locally this will be false.
+const isProduction = process.env.NODE_ENV === 'production'
+
+if (isProduction) {
+  app.set('trust proxy', 1)
+}
+
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: CLIENT_URL,
   credentials: true
 }))
 
@@ -34,8 +45,8 @@ app.use(
 
     cookie: {
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax'
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax'
     }
   })
 )
@@ -48,12 +59,16 @@ mongoose.connect(process.env.MONGO_URI)
     console.log('MongoDB connection error:', error)
   })
 
+
+// TEST ROUTE
 app.get('/api/test', (req, res) => {
   res.json({
     message: 'GameLog backend is working'
   })
 })
 
+
+// SAVE OR UPDATE GAME
 app.post('/api/games', async (req, res) => {
   try {
     const userId = req.session.userId
@@ -98,6 +113,8 @@ app.post('/api/games', async (req, res) => {
   }
 })
 
+
+// GET ALL GAMES FOR LOGGED-IN USER
 app.get('/api/games', async (req, res) => {
   try {
     const userId = req.session.userId
@@ -122,6 +139,8 @@ app.get('/api/games', async (req, res) => {
   }
 })
 
+
+// DELETE GAME
 app.delete('/api/games/:id', async (req, res) => {
   try {
     const userId = req.session.userId
@@ -156,6 +175,8 @@ app.delete('/api/games/:id', async (req, res) => {
   }
 })
 
+
+// GET ONE SAVED GAME
 app.get('/api/games/:gameId', async (req, res) => {
   try {
     const userId = req.session.userId
@@ -187,6 +208,8 @@ app.get('/api/games/:gameId', async (req, res) => {
   }
 })
 
+
+// REGISTER
 app.post('/api/register', async (req, res) => {
   try {
     const username = req.body.username
@@ -213,6 +236,7 @@ app.post('/api/register', async (req, res) => {
 
     res.status(201).json({
       message: 'Account created',
+
       user: {
         id: user._id,
         username: user.username,
@@ -228,6 +252,8 @@ app.post('/api/register', async (req, res) => {
   }
 })
 
+
+// LOGIN
 app.post('/api/login', async (req, res) => {
   try {
     const email = req.body.email
@@ -258,6 +284,7 @@ app.post('/api/login', async (req, res) => {
 
     res.json({
       message: 'Login successful',
+
       user: {
         id: user._id,
         username: user.username,
@@ -273,6 +300,8 @@ app.post('/api/login', async (req, res) => {
   }
 })
 
+
+// GET LOGGED-IN USER
 app.get('/api/me', async (req, res) => {
   try {
     const userId = req.session.userId
@@ -305,6 +334,8 @@ app.get('/api/me', async (req, res) => {
   }
 })
 
+
+// LOGOUT
 app.post('/api/logout', (req, res) => {
   req.session.destroy((error) => {
     if (error) {
@@ -319,6 +350,10 @@ app.post('/api/logout', (req, res) => {
   })
 })
 
-app.listen(3000, () => {
-  console.log('Server running on port 3000')
+
+// START SERVER
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`)
 })

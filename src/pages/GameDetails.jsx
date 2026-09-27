@@ -22,7 +22,10 @@ function GameDetails() {
 
     async function fetchSavedGame() {
       const response = await fetch(
-        `http://localhost:3000/api/games/${id}`
+        `http://localhost:3000/api/games/${id}`,
+        {
+          credentials: 'include'
+        }
       )
 
       if (response.ok) {
