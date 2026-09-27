@@ -14,9 +14,12 @@ function App() {
 
   useEffect(() => {
     async function getUser() {
-      const response = await fetch('http://localhost:3000/api/me', {
-        credentials: 'include'
-      })
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/me`,
+        {
+          credentials: 'include'
+        }
+      )
 
       if (response.ok) {
         const data = await response.json()

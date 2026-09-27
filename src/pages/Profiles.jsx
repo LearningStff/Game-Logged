@@ -7,9 +7,12 @@ function Profile() {
 
   useEffect(() => {
     async function fetchGames() {
-      const response = await fetch('http://localhost:3000/api/games', {
-        credentials: 'include'
-      })
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/games`,
+        {
+          credentials: 'include'
+        }
+      )
 
       const data = await response.json()
 
@@ -17,9 +20,12 @@ function Profile() {
     }
 
     async function fetchUser() {
-      const response = await fetch('http://localhost:3000/api/me', {
-        credentials: 'include'
-      })
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/me`,
+        {
+          credentials: 'include'
+        }
+      )
 
       if (response.ok) {
         const data = await response.json()

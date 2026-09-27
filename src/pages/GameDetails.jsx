@@ -22,7 +22,7 @@ function GameDetails() {
 
     async function fetchSavedGame() {
       const response = await fetch(
-        `http://localhost:3000/api/games/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/games/${id}`,
         {
           credentials: 'include'
         }
@@ -51,25 +51,28 @@ function GameDetails() {
     setSaveMessage('')
 
     try {
-      const response = await fetch('http://localhost:3000/api/games', {
-        method: 'POST',
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/games`,
+        {
+          method: 'POST',
 
-        headers: {
-          'Content-Type': 'application/json'
-        },
+          headers: {
+            'Content-Type': 'application/json'
+          },
 
-        credentials: 'include',
+          credentials: 'include',
 
-        body: JSON.stringify({
-          gameId: game.id,
-          title: game.name,
-          image: game.background_image,
-          released: game.released,
-          status: status,
-          rating: rating,
-          review: review
-        })
-      })
+          body: JSON.stringify({
+            gameId: game.id,
+            title: game.name,
+            image: game.background_image,
+            released: game.released,
+            status: status,
+            rating: rating,
+            review: review
+          })
+        }
+      )
 
       if (!response.ok) {
         throw new Error('Failed to save game')

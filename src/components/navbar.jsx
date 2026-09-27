@@ -4,7 +4,7 @@ function Navbar({ user, setUser }) {
   const navigate = useNavigate()
 
   async function logoutUser() {
-    const response = await fetch('http://localhost:3000/api/logout', {
+    const response = await fetch('${import.meta.env.VITE_API_URL}/api/logout', {
       method: 'POST',
       credentials: 'include'
     })

@@ -8,9 +8,13 @@ function MyGames() {
 
   useEffect(() => {
     async function fetchMyGames() {
-    const response = await fetch('http://localhost:3000/api/games', {
-      credentials: 'include'
-    })
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/games`,
+        {
+          credentials: 'include'
+        }
+      )
+
       const data = await response.json()
 
       setGames(data)
@@ -20,10 +24,13 @@ function MyGames() {
   }, [])
 
   async function removeGame(id) {
-    const response = await fetch(`http://localhost:3000/api/games/${id}`, {
-      method: 'DELETE',
-      credentials: 'include'
-    })
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/games/${id}`,
+      {
+        method: 'DELETE',
+        credentials: 'include'
+      }
+    )
 
     const data = await response.json()
     console.log(data)
