@@ -6,6 +6,7 @@ function GameDetails() {
   const [game, setGame] = useState(null)
   const [status, setStatus] = useState('')
   const [rating, setRating] = useState(0)
+  const [review, setReview] = useState('')
   const [saveMessage, setSaveMessage] = useState('')
   const [isSaving, setIsSaving] = useState(false)
 
@@ -19,7 +20,22 @@ function GameDetails() {
       setGame(data)
     }
 
+    async function fetchSavedGame() {
+      const response = await fetch(
+        `http://localhost:3000/api/games/${id}`
+      )
+
+      if (response.ok) {
+        const savedGame = await response.json()
+
+        setStatus(savedGame.status)
+        setRating(savedGame.rating)
+        setReview(savedGame.review)
+      }
+    }
+
     fetchGame()
+    fetchSavedGame()
   }, [id])
 
   async function saveGame() {
@@ -45,7 +61,8 @@ function GameDetails() {
           image: game.background_image,
           released: game.released,
           status: status,
-          rating: rating
+          rating: rating,
+          review: review
         })
       })
 
@@ -74,6 +91,7 @@ function GameDetails() {
 
   return (
     <main>
+
       {/* Hero */}
       <section className="relative h-[500px] overflow-hidden">
 
@@ -180,6 +198,21 @@ function GameDetails() {
               {isSaving ? 'Saving...' : 'Save to My Games'}
             </button>
 
+          </div>
+
+          {/* Review */}
+          <div className="mt-6">
+            <p className="mb-2 text-sm text-gray-400">
+              Your Review
+            </p>
+
+            <textarea
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+              placeholder="Write your thoughts about this game..."
+              rows="5"
+              className="w-full resize-none rounded-lg bg-gray-800 px-4 py-3 text-white outline-none placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500"
+            />
           </div>
 
           {/* Save Feedback */}

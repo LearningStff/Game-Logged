@@ -90,6 +90,7 @@ function MyGames() {
 
           {filteredGames.map((game) => (
             <div key={game._id}>
+
               <GameCard
                 id={game.gameId}
                 title={game.title}
@@ -101,6 +102,13 @@ function MyGames() {
               <p className="mt-2 text-sm text-blue-400">
                 {game.status}
               </p>
+
+              {/* Review */}
+              {game.review && (
+                <p className="mt-2 text-sm leading-6 text-gray-400">
+                  "{game.review}"
+                </p>
+              )}
 
               {removingId === game._id ? (
                 <div className="mt-2 flex items-center gap-3">

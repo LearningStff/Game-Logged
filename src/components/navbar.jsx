@@ -18,9 +18,9 @@ function Navbar() {
           My Games
         </Link>
 
-        <a href="#" className="hover:text-white">
+        <Link to="/profile" className="hover:text-white">
           Profile
-        </a>
+        </Link>
 
       </div>
 

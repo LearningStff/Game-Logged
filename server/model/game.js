@@ -26,6 +26,11 @@ const gameSchema = new mongoose.Schema({
 
   rating: {
     type: Number
+  },
+
+  review: {
+    type: String,
+    default: ''
   }
 })
 
