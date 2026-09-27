@@ -55,6 +55,8 @@ function GameDetails() {
           'Content-Type': 'application/json'
         },
 
+        credentials: 'include',
+
         body: JSON.stringify({
           gameId: game.id,
           title: game.name,

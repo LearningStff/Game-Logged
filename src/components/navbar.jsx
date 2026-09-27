@@ -1,6 +1,51 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
-function Navbar() {
+function Navbar({ user, setUser }) {
+  const navigate = useNavigate()
+
+  async function logoutUser() {
+    const response = await fetch('http://localhost:3000/api/logout', {
+      method: 'POST',
+      credentials: 'include'
+    })
+
+    if (response.ok) {
+      setUser(null)
+      navigate('/login')
+    }
+  }
+
+  function showAccountLinks() {
+    if (user) {
+      return (
+        <>
+          <Link to="/profile" className="hover:text-white">
+            {user.username}
+          </Link>
+
+          <button
+            onClick={logoutUser}
+            className="hover:text-white"
+          >
+            Logout
+          </button>
+        </>
+      )
+    }
+
+    return (
+      <>
+        <Link to="/login" className="hover:text-white">
+          Login
+        </Link>
+
+        <Link to="/register" className="hover:text-white">
+          Register
+        </Link>
+      </>
+    )
+  }
+
   return (
     <nav className="flex items-center justify-between border-b border-gray-800 px-8 py-4">
 
@@ -8,7 +53,7 @@ function Navbar() {
         GameLog
       </Link>
 
-      <div className="flex gap-6 text-gray-300">
+      <div className="flex items-center gap-6 text-gray-300">
 
         <Link to="/" className="hover:text-white">
           Discover
@@ -18,9 +63,7 @@ function Navbar() {
           My Games
         </Link>
 
-        <Link to="/profile" className="hover:text-white">
-          Profile
-        </Link>
+        {showAccountLinks()}
 
       </div>
 

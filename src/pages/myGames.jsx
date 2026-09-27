@@ -8,7 +8,9 @@ function MyGames() {
 
   useEffect(() => {
     async function fetchMyGames() {
-      const response = await fetch('http://localhost:3000/api/games')
+    const response = await fetch('http://localhost:3000/api/games', {
+      credentials: 'include'
+    })
       const data = await response.json()
 
       setGames(data)
@@ -19,7 +21,8 @@ function MyGames() {
 
   async function removeGame(id) {
     const response = await fetch(`http://localhost:3000/api/games/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      credentials: 'include'
     })
 
     const data = await response.json()

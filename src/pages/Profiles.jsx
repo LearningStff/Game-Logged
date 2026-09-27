@@ -3,16 +3,32 @@ import GameCard from '../components/gamecard'
 
 function Profile() {
   const [games, setGames] = useState([])
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     async function fetchGames() {
-      const response = await fetch('http://localhost:3000/api/games')
+      const response = await fetch('http://localhost:3000/api/games', {
+        credentials: 'include'
+      })
+
       const data = await response.json()
 
       setGames(data)
     }
 
+    async function fetchUser() {
+      const response = await fetch('http://localhost:3000/api/me', {
+        credentials: 'include'
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setUser(data)
+      }
+    }
+
     fetchGames()
+    fetchUser()
   }, [])
 
   const completedGames = games.filter(
@@ -39,6 +55,14 @@ function Profile() {
 
   const recentGames = games.slice(-5).reverse()
 
+  function showUsername() {
+    if (user) {
+      return user.username
+    }
+
+    return 'Loading...'
+  }
+
   return (
     <main className="mx-auto max-w-7xl px-6 py-12">
 
@@ -49,7 +73,7 @@ function Profile() {
         </p>
 
         <h1 className="text-5xl font-bold">
-          Nathan
+          {showUsername()}
         </h1>
 
         <p className="mt-3 text-gray-400">
